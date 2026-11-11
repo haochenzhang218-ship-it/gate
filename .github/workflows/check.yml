@@ -68,9 +68,9 @@ jobs:
           MAX_CHECK_NODES: ${{ github.event.inputs.max_nodes || '0' }}
           MIN_SUCCESS_RATIO: '0'
         run: python vpngate.py
-      - name: Build four-country list
+      - name: Build filtered node list
         run: |
-          grep -E '日本|美国|新加坡|加拿大' public/nodes.txt | grep -v '机房' > public/nodes-4.txt.tmp || true
+          grep -E '日本|美国|新加坡|加拿大|台湾' public/nodes.txt | grep -v '机房' > public/nodes-4.txt.tmp || true
           if [ -s public/nodes-4.txt.tmp ]; then
             mv public/nodes-4.txt.tmp public/nodes-4.txt
             echo "nodes-4.txt lines: $(wc -l < public/nodes-4.txt)"
