@@ -68,6 +68,16 @@ jobs:
           MAX_CHECK_NODES: ${{ github.event.inputs.max_nodes || '0' }}
           MIN_SUCCESS_RATIO: '0'
         run: python vpngate.py
+      - name: Build four-country list
+        run: |
+          grep -E '日本|美国|新加坡|加拿大' public/nodes.txt > public/nodes-4.txt.tmp || true
+          if [ -s public/nodes-4.txt.tmp ]; then
+            mv public/nodes-4.txt.tmp public/nodes-4.txt
+            echo "nodes-4.txt lines: $(wc -l < public/nodes-4.txt)"
+          else
+            echo "::error::Four-country filter produced no lines; aborting to keep the previously published site."
+            exit 1
+          fi
 
       - name: Ensure GitHub Pages is enabled
         env:
