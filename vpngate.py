@@ -43,7 +43,25 @@ for _stream in (sys.stdout, sys.stderr):
 # 常量
 # ---------------------------------------------------------------------------
 REPO_DIR = os.path.dirname(os.path.abspath(__file__))
+DENYLIST_PATH = os.path.join(REPO_DIR, "denylist.txt")
 
+
+def load_denylist(path: str = DENYLIST_PATH) -> set[str]:
+    """读取仓库根目录的denylist.txt：每行一个 VPN Gate 主机名，# 开头为注释。"""
+    blocked: set[str] = set()
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip().lower()
+                if not line or line.startswith("#"):
+                    continue
+                blocked.add(line)
+    except FileNotFoundError:
+        pass
+    return blocked
+
+    
+DENYLIST = load_denylist()
 SCHEMA_VERSION = 1
 
 # VPN Gate 没有 HTTPS 接口，官方 API 只提供 HTTP。
@@ -545,6 +563,8 @@ def to_sstp_nodes(rows: Iterable[dict[str, Any]]) -> list[Node]:
         # VPN Gate 主机名有时是 public-vpn-153，有时已是完整域名
         if "." not in host:
             host = f"{host}.opengw.net"
+        if host in DENYLIST:
+            continue
 
         nodes.append(
             Node(
