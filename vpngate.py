@@ -60,7 +60,7 @@ def load_denylist(path: str = DENYLIST_PATH) -> set[str]:
         pass
     return blocked
 
-    
+
 DENYLIST = load_denylist()
 SCHEMA_VERSION = 1
 
